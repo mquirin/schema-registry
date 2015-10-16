@@ -294,12 +294,10 @@ public class KafkaSchemaRegistry implements SchemaRegistry {
 
       // determine the latest version of the schema in the subject
       Iterator<Schema> allVersions = getAllVersions(subject);
-      //Schema latestSchema = null;
-      List<Schema> knownSchemas = new ArrayList<Schema>;
+      List<Schema> knownSchemas = new ArrayList<Schema>();
       int newVersion = MIN_VERSION;
       while (allVersions.hasNext()) {
-        // latestSchema = allVersions.next();
-        knownSchemas.add(allVersions.next())
+        knownSchemas.add(allVersions.next());
         newVersion = latestSchema.getVersion() + 1;
       }
 
