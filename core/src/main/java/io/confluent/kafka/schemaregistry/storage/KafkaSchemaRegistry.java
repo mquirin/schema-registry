@@ -294,16 +294,18 @@ public class KafkaSchemaRegistry implements SchemaRegistry {
 
       // determine the latest version of the schema in the subject
       Iterator<Schema> allVersions = getAllVersions(subject);
-      Schema latestSchema = null;
+      //Schema latestSchema = null;
+      List<Schema> knownSchemas = new ArrayList<Schema>;
       int newVersion = MIN_VERSION;
       while (allVersions.hasNext()) {
-        latestSchema = allVersions.next();
+        // latestSchema = allVersions.next();
+        knownSchemas.add(allVersions.next())
         newVersion = latestSchema.getVersion() + 1;
       }
 
       // assign a guid and put the schema in the kafka store
-      if (latestSchema == null || isCompatible(subject, avroSchema.canonicalString,
-                                               latestSchema.getSchema())) {
+      if (knownSchemas.size() == 0 || isCompatible(subject, avroSchema.canonicalString,
+                                               knownSchemas)) {
         SchemaKey keyForNewVersion = new SchemaKey(subject, newVersion);
         schema.setVersion(newVersion);
 
@@ -686,7 +688,7 @@ public class KafkaSchemaRegistry implements SchemaRegistry {
   @Override
   public boolean isCompatible(String subject,
                               String newSchemaObj,
-                              String latestSchema)
+                              List<Schema> knownSchemas)
       throws SchemaRegistryException {
     AvroSchema newAvroSchema = AvroUtils.parseSchema(newSchemaObj);
     AvroSchema latestAvroSchema = AvroUtils.parseSchema(latestSchema);
@@ -698,6 +700,12 @@ public class KafkaSchemaRegistry implements SchemaRegistry {
     if (compatibility == null) {
       compatibility = getCompatibilityLevel(null);
     }
+    boolean compatible = true;
+    for(Schema knownSchema : knownSchemas) {
+      compatible &= compatibility.compatibilityChecker
+        .isCompatible(newAvroSchema.schemaObj, knownSchema.getSchema().schemaObj);
+    }
+    
     return compatibility.compatibilityChecker
         .isCompatible(newAvroSchema.schemaObj, latestAvroSchema.schemaObj);
   }
