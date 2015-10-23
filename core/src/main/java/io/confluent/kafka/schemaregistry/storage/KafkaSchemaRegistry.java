@@ -703,9 +703,7 @@ public class KafkaSchemaRegistry implements SchemaRegistry {
       compatible &= compatibility.compatibilityChecker
         .isCompatible(newAvroSchema.schemaObj, knownSchema.getSchema().schemaObj);
     }
-    
-    return compatibility.compatibilityChecker
-        .isCompatible(newAvroSchema.schemaObj, latestAvroSchema.schemaObj);
+    return compatible;
   }
   
   /** For testing. */
